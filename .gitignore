@@ -1,0 +1,8 @@
+
+question_answering/dataset/glove.6B.100d.txt
+question_answering/dataset/glove.840B.300d.txt
+question_answering/dataset/qa_char_vocab.npy
+question_answering/__pycache__
+question_answering/.ipynb_checkpoints
+question_answering/dataset
+question_answering/model/model_stacked_bilstm.h5
