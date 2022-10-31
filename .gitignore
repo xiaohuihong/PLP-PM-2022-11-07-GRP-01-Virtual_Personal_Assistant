@@ -6,3 +6,5 @@ question_answering/__pycache__
 question_answering/.ipynb_checkpoints
 question_answering/dataset
 question_answering/model/model_stacked_bilstm.h5
+question_answering/model/model_encoder_transformer.h5
+
