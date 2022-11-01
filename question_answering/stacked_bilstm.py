@@ -4,8 +4,10 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 import spacy
+from question_answering.preprocess import *
 nlp = spacy.load('en_core_web_sm')
-from preprocess import *
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 class AlignQuestionEmbedding(nn.Module):
@@ -150,7 +152,7 @@ class DocumentReader(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def get_glove_embedding(self):
-        weights_matrix = np.load('./dataset/qaglove_vt.npy')
+        weights_matrix = np.load(dir_path + './dataset/qaglove_vt.npy')
         num_embeddings, embedding_dim = weights_matrix.shape
         embedding = nn.Embedding.from_pretrained(torch.FloatTensor(weights_matrix).to(self.device), freeze=False)
         return embedding
@@ -187,9 +189,9 @@ class DocumentReader(nn.Module):
 
 class qa_model():
     def __init__(self):
-        self.word2idx = np.load('./dataset/qa_word2idx.npy', allow_pickle=True).item()
-        self.idx2word = np.load('./dataset/qa_idx2word.npy', allow_pickle=True).item()
-        self.char2idx = np.load('./dataset/qa_char2idx.npy', allow_pickle=True).item()
+        self.word2idx = np.load(dir_path + './dataset/qa_word2idx.npy', allow_pickle=True).item()
+        self.idx2word = np.load(dir_path + './dataset/qa_idx2word.npy', allow_pickle=True).item()
+        self.char2idx = np.load(dir_path + './dataset/qa_char2idx.npy', allow_pickle=True).item()
         self.device = torch.device('cpu')
         self.hidden_dim = 128
         self.emb_dim = 300
@@ -197,7 +199,7 @@ class qa_model():
         self.num_directions = 2
         self.dropout = 0.3
         self.model = DocumentReader(self.hidden_dim, self.emb_dim, self.num_layers, self.num_directions, self.dropout, self.device)
-        self.model.load_state_dict(torch.load('./model/model_stacked_bilstm.h5'))
+        self.model.load_state_dict(torch.load(dir_path + './model/model_stacked_bilstm.h5'))
 
     def predict(self, context, question):
         self.model.eval()
