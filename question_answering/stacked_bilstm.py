@@ -2,15 +2,10 @@ import pandas as pd
 import numpy as np
 import torch
 from torch import nn
-import json, re, unicodedata, string, typing, time
 import torch.nn.functional as F
 import spacy
-from collections import Counter
-import pickle
-from nltk import word_tokenize
 nlp = spacy.load('en_core_web_sm')
 from preprocess import *
-
 
 
 class AlignQuestionEmbedding(nn.Module):
