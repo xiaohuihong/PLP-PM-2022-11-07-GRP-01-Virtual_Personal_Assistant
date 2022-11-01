@@ -8,3 +8,4 @@ question_answering/dataset
 question_answering/model/model_stacked_bilstm.h5
 question_answering/model/model_encoder_transformer.h5
 
+text_classification/model/word2vec_rnn1.h5
