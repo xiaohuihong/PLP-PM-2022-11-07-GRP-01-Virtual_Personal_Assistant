@@ -190,68 +190,79 @@ class DocumentReader(nn.Module):
         return start_scores, end_scores
 
 
+class qa_model():
+    def __init__(self):
+        self.word2idx = np.load('./dataset/qa_word2idx.npy', allow_pickle=True).item()
+        self.idx2word = np.load('./dataset/qa_idx2word.npy', allow_pickle=True).item()
+        self.char2idx = np.load('./dataset/qa_char2idx.npy', allow_pickle=True).item()
+        self.device = torch.device('cpu')
+        self.hidden_dim = 128
+        self.emb_dim = 300
+        self.num_layers = 3
+        self.num_directions = 2
+        self.dropout = 0.3
+        self.model = DocumentReader(self.hidden_dim, self.emb_dim, self.num_layers, self.num_directions, self.dropout, self.device)
+        self.model.load_state_dict(torch.load('./model/model_stacked_bilstm.h5'))
+
+    def predict(self, context, question):
+        self.model.eval()
+        input_list = [context, question]
+        input_df = pd.DataFrame([input_list])
+        input_df.columns = ["context", "question"]
+
+        input_df['context_ids'] = input_df.context.apply(context_to_ids, word2idx=self.word2idx)
+        input_df['question_ids'] = input_df.question.apply(question_to_ids, word2idx=self.word2idx)
+
+        max_context_len = max([len(ctx) for ctx in input_df.context_ids])
+        padded_context = torch.LongTensor(len(input_df), max_context_len).fill_(1)
+
+        max_question_len = max([len(ques) for ques in input_df.question_ids])
+        padded_question = torch.LongTensor(len(input_df), max_question_len).fill_(1)
+
+        for i, ctx in enumerate(input_df.context_ids):
+            padded_context[i, :len(ctx)] = torch.LongTensor(ctx)
+
+        for i, ques in enumerate(input_df.question_ids):
+            padded_question[i, : len(ques)] = torch.LongTensor(ques)
+
+        context_mask = torch.eq(padded_context, 1)
+        question_mask = torch.eq(padded_question, 1)
+
+        p1, p2 = self.model(padded_context, padded_question, context_mask, question_mask)
+
+        batch_size, c_len = p1.size()
+        ls = nn.LogSoftmax(dim=1)
+        mask = (torch.ones(c_len, c_len) * float('-inf')).to(self.device).tril(-1).unsqueeze(0).expand(batch_size, -1, -1)
+
+        score = (ls(p1).unsqueeze(2) + ls(p2).unsqueeze(1)) + mask
+        score, s_idx = score.max(dim=1)
+        score, e_idx = score.max(dim=1)
+        s_idx = torch.gather(s_idx, 1, e_idx.view(-1, 1)).squeeze()
+
+        # stack predictions
+        # predictions = {}
+        # for i in range(batch_size):
+        #     pred = input_df.context_ids[i][s_idx[i]:e_idx[i] + 1]
+        #     pred = ' '.join([idx2word[idx.item()] for idx in pred])
+        #     predictions[i] = pred
+
+        pred = input_df.context_ids[0][s_idx.item():e_idx.item() + 1]
+        answer = ' '.join([self.idx2word[idx] for idx in pred])
+        print(f"Context: {context} \nQuestion: {question} \nAnswer: {answer}".format(context=context, question=question, answer=answer))
+
+        return answer
+
 
 if __name__ == '__main__':
-    word2idx = np.load('./dataset/qa_word2idx.npy', allow_pickle=True).item()
-    idx2word = np.load('./dataset/qa_idx2word.npy', allow_pickle=True).item()
-    char2idx = np.load('./dataset/qa_char2idx.npy', allow_pickle=True).item()
-    device = torch.device('cpu')
-    HIDDEN_DIM = 128
-    EMB_DIM = 300
-    NUM_LAYERS = 3
-    NUM_DIRECTIONS = 2
-    DROPOUT = 0.3
-    model = DocumentReader(HIDDEN_DIM, EMB_DIM, NUM_LAYERS, NUM_DIRECTIONS, DROPOUT, device)
-    model.load_state_dict(torch.load('./model/model_stacked_bilstm.h5'))
-    model.eval()
-
     context = "Today is John's birthday."
     question = "What day is it today?"
+    model = qa_model()
+    pred = model.predict(context, question)
+    print("Get the answer: ", pred)
 
-    input_list = [context, question]
-    input_df = pd.DataFrame([input_list])
-    input_df.columns = ["context", "question"]
 
-    input_df['context_ids'] = input_df.context.apply(context_to_ids, word2idx=word2idx)
-    input_df['question_ids'] = input_df.question.apply(question_to_ids, word2idx=word2idx)
 
-    max_context_len = max([len(ctx) for ctx in input_df.context_ids])
-    padded_context = torch.LongTensor(len(input_df), max_context_len).fill_(1)
 
-    max_question_len = max([len(ques) for ques in input_df.question_ids])
-    padded_question = torch.LongTensor(len(input_df), max_question_len).fill_(1)
-
-    for i, ctx in enumerate(input_df.context_ids):
-        padded_context[i, :len(ctx)] = torch.LongTensor(ctx)
-
-    for i, ques in enumerate(input_df.question_ids):
-        padded_question[i, : len(ques)] = torch.LongTensor(ques)
-
-    context_mask = torch.eq(padded_context, 1)
-    question_mask = torch.eq(padded_question, 1)
-
-    p1, p2 = model(padded_context, padded_question, context_mask, question_mask)
-
-    batch_size, c_len = p1.size()
-    ls = nn.LogSoftmax(dim=1)
-    mask = (torch.ones(c_len, c_len) * float('-inf')).to(device).tril(-1).unsqueeze(0).expand(batch_size, -1, -1)
-
-    score = (ls(p1).unsqueeze(2) + ls(p2).unsqueeze(1)) + mask
-    score, s_idx = score.max(dim=1)
-    score, e_idx = score.max(dim=1)
-    s_idx = torch.gather(s_idx, 1, e_idx.view(-1, 1)).squeeze()
-
-    # stack predictions
-    # predictions = {}
-    # for i in range(batch_size):
-    #     pred = input_df.context_ids[i][s_idx[i]:e_idx[i] + 1]
-    #     pred = ' '.join([idx2word[idx.item()] for idx in pred])
-    #     predictions[i] = pred
-
-    pred = input_df.context_ids[0][s_idx.item():e_idx.item() + 1]
-    answer = ' '.join([idx2word[idx] for idx in pred])
-
-    print(f"Context: {context} \nQuestion: {question} \nAnswer: {answer}".format(context=context, question=question, answer=answer))
 
 
 
