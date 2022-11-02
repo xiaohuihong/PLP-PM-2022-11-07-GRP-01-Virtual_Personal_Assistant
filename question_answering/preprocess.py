@@ -193,7 +193,7 @@ def context_to_ids(text, word2idx):
     '''
     
     context_tokens = [w.text for w in nlp(text, disable=['parser','tagger','ner'])]
-    context_ids = [word2idx[word] for word in context_tokens]
+    context_ids = [word2idx[word] if word in word2idx else 0 for word in context_tokens]
     
     assert len(context_ids) == len(context_tokens)
     return context_ids

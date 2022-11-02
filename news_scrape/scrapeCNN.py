@@ -8,15 +8,16 @@ class news_crawler():
     def __init__(self, new_num=10):
         self.new_num = new_num
 
+    # &section=politics
     def get_news_df(self):
-        res = requests.get("https://search.api.cnn.io/content?q=news&size=%s&sort=newest&from=0"%self.new_num)
+        res = requests.get("https://search.api.cnn.io/content?type=article&size=%s&sort=newest&from=0"%self.new_num)
         links = [x['url'] for x in res.json()['result']]
         url_list = []
         title_list = []
         content_list = []
         img_list = []
         idx_list = []
-        idx = 0
+        idx = 1
         for url in links:
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -68,13 +69,14 @@ class news_crawler():
             #     "content": content
             # }
 
+            idx_list.append(idx)
             url_list.append(url)
             title_list.append(title)
             content_list.append(content)
             img_list.append(img)
             idx = idx + 1
 
-        data = {'idx': idx,
+        data = {'idx': idx_list,
                 'url': url_list,
                 'title': title_list,
                 'content': content_list,

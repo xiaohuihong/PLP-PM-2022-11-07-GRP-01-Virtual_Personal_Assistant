@@ -29,3 +29,9 @@ class telegram_chatbot():
         parser = cfg.ConfigParser()
         parser.read(config)
         return parser.get('creds', 'token')
+
+    def send_photo(self, chat_id, image_path, image_caption=""):
+        data = {"chat_id": chat_id, "caption": image_caption}
+        url = self.base + "sendPhoto"
+        with open(image_path, "rb") as image_file:
+            requests.post(url, data=data, files={"photo": image_file})

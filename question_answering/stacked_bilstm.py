@@ -210,6 +210,9 @@ class qa_model():
         input_df['context_ids'] = input_df.context.apply(context_to_ids, word2idx=self.word2idx)
         input_df['question_ids'] = input_df.question.apply(question_to_ids, word2idx=self.word2idx)
 
+        # input_err = get_error_indices(input_df, self.idx2word)
+        # input_df.drop(input_err, inplace=True)
+
         max_context_len = max([len(ctx) for ctx in input_df.context_ids])
         padded_context = torch.LongTensor(len(input_df), max_context_len).fill_(1)
 
