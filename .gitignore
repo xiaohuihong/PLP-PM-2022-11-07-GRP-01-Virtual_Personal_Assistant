@@ -15,3 +15,6 @@ text_classification/__pycache__/one_hot_rnn.cpython-37.pyc
 telegram_bot/wordcloud.png
 telegram_bot/__pycache__/bot.cpython-37.pyc
 telegram_bot/__pycache__/bot.cpython-37.pyc
+news_scrape/__pycache__/scrapeCNN.cpython-37.pyc
+text_summarization/model/t5_model/pytorch_model.bin
+text_summarization/model/t5_model/config.json

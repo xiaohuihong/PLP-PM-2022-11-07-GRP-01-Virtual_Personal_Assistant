@@ -9,12 +9,12 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 
 class classification_model():
     def __init__(self):
-        with open(dir_path + './dataset/tokenizer.pickle', 'rb') as handle:
+        with open(dir_path + '/model/one_hot_rnn/tokenizer.pickle', 'rb') as handle:
             self.tokenizer = pickle.load(handle)
         self.encoder = LabelEncoder()
-        self.encoder.classes_ = np.load(dir_path + './dataset/classes.npy', allow_pickle=True)
+        self.encoder.classes_ = np.load(dir_path + '/model/one_hot_rnn/classes.npy', allow_pickle=True)
         # load model
-        self.model = load_model(dir_path + './model/one_hot_rnn.h5')
+        self.model = load_model(dir_path + '/model/one_hot_rnn/one_hot_rnn.h5')
         # summarize model.
         # model.summary()
 
@@ -28,7 +28,7 @@ class classification_model():
 
 if __name__ == '__main__':
     context_list = []
-    test_text1 = "The earth is an great place live"
+    test_text1 = "Biden won the election."
     context_list.append(test_text1)
     model = classification_model()
     cate_list = model.predict(context_list)
