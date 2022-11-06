@@ -311,5 +311,10 @@ def index_answer(row, idx2word):
     return [start_idx, end_idx]
 
 
-
+if __name__ == '__main__':
+    text = "This is the text 1."
+    for w in nlp(text, disable=['parser', 'tagger', 'ner']):
+        print(w.text)
+    print(nlp.pipe_names)
+    print(nlp.analyze_pipes(pretty=True))
 
