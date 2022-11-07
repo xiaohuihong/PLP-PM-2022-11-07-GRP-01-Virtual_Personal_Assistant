@@ -10,7 +10,7 @@ question_answering/model/model_encoder_transformer.h5
 
 text_classification/model/word2vec_rnn1.h5
 text_classification/model/one_hot_rnn.h5
-text_classification/model/word2vec_rnn.h5
+
 text_classification/__pycache__/one_hot_rnn.cpython-37.pyc
 telegram_bot/wordcloud.png
 telegram_bot/__pycache__/bot.cpython-37.pyc
