@@ -24,3 +24,4 @@ text_summarization/model/t5_model/config.json
 .idea/PLP-PM-2022-11-07-GRP-01-Virtual_Personal_Assistant.iml
 .idea/vcs.xml
 Demo Video.mp4
+question_answering/dataset.zip
