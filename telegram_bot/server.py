@@ -15,7 +15,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 wordcloud_img_path = dir_path + '/wordcloud.png'
 
 bot = telegram_chatbot("config.cfg")
-threshold = 0.9
+threshold = 0.6
 chatbot = ChatBot(
     'plp_newsbot',
     logic_adapters=[
@@ -42,7 +42,7 @@ summarization_model = summarization_model()
 def make_reply(msg, reply_to_msg):
     replies = []
     parse_mode = 'text'
-    num_news = 10
+    num_news = 5
     global news_df
     if msg is not None:
         if "push news" in msg.lower():
@@ -109,9 +109,10 @@ while True:
             except:
                 message = None
                 reply_to_message = None
-            from_ = item["message"]["from"]["id"]
-            replies, parse_mode = make_reply(message, reply_to_message)
-            for reply in replies:
-                bot.send_message(reply, from_, parse_mode)
-                if reply == "The Wordcloud is":
-                    bot.send_photo(from_, wordcloud_img_path)
+            if "message" in item:
+                from_ = item["message"]["from"]["id"]
+                replies, parse_mode = make_reply(message, reply_to_message)
+                for rep in replies:
+                    bot.send_message(rep, from_, parse_mode)
+                    if str(rep).lower().startswith("the wordcloud"):
+                        bot.send_photo(from_, wordcloud_img_path)

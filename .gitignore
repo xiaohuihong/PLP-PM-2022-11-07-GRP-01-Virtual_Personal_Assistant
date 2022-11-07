@@ -18,3 +18,9 @@ telegram_bot/__pycache__/bot.cpython-37.pyc
 news_scrape/__pycache__/scrapeCNN.cpython-37.pyc
 text_summarization/model/t5_model/pytorch_model.bin
 text_summarization/model/t5_model/config.json
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/PLP-PM-2022-11-07-GRP-01-Virtual_Personal_Assistant.iml
+.idea/vcs.xml
+Demo Video.mp4
