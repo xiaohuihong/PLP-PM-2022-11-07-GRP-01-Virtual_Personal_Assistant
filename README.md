@@ -8,3 +8,11 @@ pip install --user numpy pandas nltk bs4 python-telegram-bot chatterbot==1.0.4 c
 pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 python -m spacy download en
 ```
+conda create -n py37 python=3.7
+conda activate py37
+conda install numpy jupyter notebook
+pip install --user numpy pandas nltk bs4 python-telegram-bot spacy==2.3.5 tensorflow keras seaborn wordcloud scipy transformers SentencePiece chatterbot==1.0.4 chatterbot_corpus 
+pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+python -m spacy download en
+
+https://nlp.stanford.edu/data/glove.840B.300d.zip
